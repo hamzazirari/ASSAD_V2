@@ -26,13 +26,24 @@ if(!preg_match("/^[^\s]{3,15}$/", $password)){
 
 if($confirmPassword !== $password){
     echo"veuillez entrer le meme password";
-    return; 
+    return;
 }else {
      $password_hash = password_hash($confirmPassword,PASSWORD_DEFAULT);
 }
-
+if($role == 'visiteur'){
+    $approuve = 'oui';
+}else if($role == 'guide'){
+    $approuve = 'non';
+}
 
 $etat = 'actif';
+
+$utilisateur = new Utilisateur($nom , $email, $role, $password_hash, $etat, $approuve);
+$utilisateur->creer();
+
+echo"Inscription avec succes";
+
+header("Location: /connexion.php");
 
 ?>
 
