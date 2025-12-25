@@ -1,5 +1,38 @@
 <?php 
+require_once('../classes/Database.php');
 
+if ($_SERVER['REQUEST_METHOD']=='POST'){
+    $nom = $_POST['fullname'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $confirmPassword = $_POST['confirm_password'];
+    $role = $_POST['role'];
+}
+
+if(empty($nom) || empty($email) || empty($password) || empty($confirmPassword) || empty($role)){
+    echo"Veuiller remplir tout les champs";
+    return;
+}
+
+if(!preg_match("/^[^\s\W]{4,}@[^\d\s]{1,5}\.[a-zA-Z]{1,4}$/", $email)){
+    echo"Email invalalid";
+    return ; 
+}
+
+if(!preg_match("/^[^\s]{3,15}$/", $password)){
+    echo"Password invalid";
+    return; 
+}
+
+if($confirmPassword !== $password){
+    echo"veuillez entrer le meme password";
+    return; 
+}else {
+     $password_hash = password_hash($confirmPassword,PASSWORD_DEFAULT);
+}
+
+
+$etat = 'actif';
 
 ?>
 
