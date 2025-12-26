@@ -1,7 +1,57 @@
 <?php
+require_once('../classes/Database.php');
+session_start();
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
+
+    if (empty($email) || empty($password)) {
+        echo "Veuillez remplir tous les champs";
+        exit;
+    }
+
+    $utilisateur = Utilisateur::trouverParEmail($email);
+
+    if (!$utilisateur) {
+        echo "Email ou mot de passe incorrect";
+        exit;
+    }
+
+    if (!$utilisateur->verifierMotDePasse($password)) {
+        echo "Email ou mot de passe incorrect";
+        exit;
+    }
+
+    // visiteurs
+    if ($utilisateur->getRole() === 'visiteur' && $utilisateur->getEtat() !== 'actif') {
+        echo "Compte désactivé";
+        exit;
+    }
+
+    // guides
+    if ($utilisateur->getRole() === 'guide' && $utilisateur->getApprouve() !== 'oui') {
+        header("Location: guide_non_approuve.php");
+        exit;
+    }
+
+    $_SESSION['id'] = $utilisateur->getId();
+    $_SESSION['nom'] = $utilisateur->getNom();
+    $_SESSION['role'] = $utilisateur->getRole();
+
+  
+    if ($utilisateur->getRole() === 'admin') {
+        header("Location: dashboard_admin.php");
+    } elseif ($utilisateur->getRole() === 'guide') {
+        header("Location: dashboard_guide.php");
+    } else {
+        header("Location: dashboard_visiteur.php");
+    }
+    exit;
+}
 ?>
+
 
 
 <!DOCTYPE html>

@@ -95,7 +95,7 @@ public  function creer(){
 $this->id = $pdo->lastInsertId();
 }
 
-public function trouverParEmail($email){
+public static function trouverParEmail($email){
     $db = new Database();
     $pdo = $db->getPdo();
 
@@ -120,7 +120,7 @@ public function trouverParEmail($email){
     }
 }
 
-public function verifierMotDePasse($motDePasse){
+public  function verifierMotDePasse($motDePasse){
     if(password_verify($motDePasse, $this->motDePasseHashe)){
         return true ; 
     }else {

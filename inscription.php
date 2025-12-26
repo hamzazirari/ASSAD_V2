@@ -30,20 +30,21 @@ if($confirmPassword !== $password){
 }else {
      $password_hash = password_hash($confirmPassword,PASSWORD_DEFAULT);
 }
-if($role == 'visiteur'){
-    $approuve = 'oui';
-}else if($role == 'guide'){
+
+ if($role == 'guide'){
     $approuve = 'non';
 }
 
-$etat = 'actif';
+ if($role == 'visiteur'){
+    $etat = 'actif';
+}
 
 $utilisateur = new Utilisateur($nom , $email, $role, $password_hash, $etat, $approuve);
 $utilisateur->creer();
 
+header("Location: /connexion.php");
 echo"Inscription avec succes";
 
-header("Location: /connexion.php");
 
 ?>
 
