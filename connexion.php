@@ -1,5 +1,6 @@
 <?php
-require_once('../classes/Database.php');
+require_once('classes/Database.php');
+require_once('classes/Utilisateur.php');
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

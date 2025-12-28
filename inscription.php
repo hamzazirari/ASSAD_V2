@@ -1,5 +1,6 @@
 <?php 
-require_once('../classes/Database.php');
+require_once('classes/Database.php');
+require_once('classes/Utilisateur.php');
 
 if ($_SERVER['REQUEST_METHOD']=='POST'){
     $nom = $_POST['fullname'];
@@ -7,45 +8,43 @@ if ($_SERVER['REQUEST_METHOD']=='POST'){
     $password = $_POST['password'];
     $confirmPassword = $_POST['confirm_password'];
     $role = $_POST['role'];
-}
 
-if(empty($nom) || empty($email) || empty($password) || empty($confirmPassword) || empty($role)){
-    echo"Veuiller remplir tout les champs";
-    return;
-}
 
-if(!preg_match("/^[^\s\W]{4,}@[^\d\s]{1,5}\.[a-zA-Z]{1,4}$/", $email)){
-    echo"Email invalalid";
-    return ; 
-}
+    if(empty($nom) || empty($email) || empty($password) || empty($confirmPassword) || empty($role)){
+        echo "Veuillez remplir tous les champs";
+        exit;
+    }
 
-if(!preg_match("/^[^\s]{3,15}$/", $password)){
-    echo"Password invalid";
-    return; 
-}
+    if(!preg_match("/^[^\s\W]{4,}@[^\d\s]{1,5}\.[a-zA-Z]{1,4}$/", $email)){
+        echo "Email invalide";
+        exit; 
+    }
 
-if($confirmPassword !== $password){
-    echo"veuillez entrer le meme password";
-    return;
-}else {
-     $password_hash = password_hash($confirmPassword,PASSWORD_DEFAULT);
-}
+    if(!preg_match("/^[^\s]{3,15}$/", $password)){
+        echo "Password invalide";
+        exit; 
+    }
 
- if($role == 'guide'){
-    $approuve = 'non';
-}
+    if($confirmPassword !== $password){
+        echo "Les mots de passe ne correspondent pas";
+        exit;
+    }
 
- if($role == 'visiteur'){
+    $password_hash = password_hash($password, PASSWORD_DEFAULT);
+    
     $etat = 'actif';
+    $approuve = 'oui';
+
+    if($role == 'guide'){
+        $approuve = 'non';
+    }
+
+    $utilisateur = new Utilisateur($nom, $email, $role, $password_hash, $etat, $approuve);
+    $utilisateur->creer();
+
+    header("Location: connexion.php");
+    exit;
 }
-
-$utilisateur = new Utilisateur($nom , $email, $role, $password_hash, $etat, $approuve);
-$utilisateur->creer();
-
-header("Location: /connexion.php");
-echo"Inscription avec succes";
-
-
 ?>
 
 <!DOCTYPE html>

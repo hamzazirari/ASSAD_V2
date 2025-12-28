@@ -2,76 +2,114 @@
 require_once('Database.php');
 
 class Animal {
-
-    private $id;
+    private $id_animal;
     private $nom;
-    private $description;
+    private $espece;
+    private $alimentation;
     private $image;
-    private $habitatId;
-    private $habitatNom;
+    private $paysorigine;
+    private $descriptioncourte;
+    private $id_habitat;
 
-    public function __construct($id,$nom,$description, $image,$habitatId,$habitatNom) {
-        
-        $this->id = $id;
+    public function __construct($id_animal, $nom, $espece, $alimentation, $image, $paysorigine, $descriptioncourte, $id_habitat) {
+        $this->id_animal = $id_animal;
         $this->nom = $nom;
-        $this->description = $description;
+        $this->espece = $espece;
+        $this->alimentation = $alimentation;
         $this->image = $image;
-        $this->habitatId = $habitatId;
-        $this->habitatNom = $habitatNom;
+        $this->paysorigine = $paysorigine;
+        $this->descriptioncourte = $descriptioncourte;
+        $this->id_habitat = $id_habitat;
     }
 
-    // GETTERS
-
-    public function getId(){
-        return $this->id;
+    public function getIdAnimal() { 
+        return $this->id_animal; 
     }
 
-    public function getNom(){
-        return $this->nom;
+    public function getNom() { 
+        return $this->nom; 
     }
 
-    public function getDescription(){
-        return $this->description;
+    public function getEspece() {
+         return $this->espece; 
     }
 
-    public function getImage(){
-        return $this->image;
+    public function getAlimentation() {
+         return $this->alimentation; 
     }
 
-    public function getHabitatId(){
-        return $this->habitatId;
+    public function getImage() {
+         return $this->image; 
     }
 
-    public function getHabitatNom(){
-        return $this->habitatNom;
+    public function getPaysOrigine() {
+         return $this->paysorigine; 
     }
 
-    public static function listerTous(){
-
-    $db = new Database();
-    $pdo = $db->getPdo();
-
-    $sql = " SELECT a.id_animal,a.nom,a.description,a.image,a.habitat_id,h.nom AS habitat_nom
-        FROM animaux a
-        JOIN habitats h ON a.habitat_id = h.id_habitat
-    ";
-
-    $stmt = $pdo->query($sql);
-
-    $animaux = [];
-
-    while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-        $animaux[] = new Animal(
-            $row['id_animal'],
-            $row['nom'],
-            $row['description'],
-            $row['image'],
-            $row['habitat_id'],
-            $row['habitat_nom']
-        );
+    public function getDescriptionCourte() {
+         return $this->descriptioncourte; 
     }
 
-    return $animaux;
+    public function getIdHabitat() { 
+        return $this->id_habitat; 
+    }
+
+    public static function listerTous() {
+        $db = new Database();
+        $pdo = $db->getPdo();
+
+        $sql = "SELECT * FROM animaux"; 
+        $stmt = $pdo->query($sql);
+
+        $animaux = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $animaux[] = new Animal(
+                $row['id_animal'],
+                $row['nom'],
+                $row['espece'],
+                $row['alimentation'],
+                $row['image'],
+                $row['paysorigine'],
+                $row['descriptioncourte'],
+                $row['id_habitat']
+            );
+        }
+
+        return $animaux;
+    }
+
+    public static function listerParHabitat($id_hab) {
+        $db = new Database();
+        $pdo = $db->getPdo();
+
+        $sql = "SELECT * FROM animaux WHERE id_habitat = :id_habitat"; 
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':id_habitat' => $id_hab]);
+
+        $animaux = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $animaux[] = new Animal(
+                $row['id_animal'],
+                $row['nom'],
+                $row['espece'],
+                $row['alimentation'],
+                $row['image'],
+                $row['paysorigine'],
+                $row['descriptioncourte'],
+                $row['id_habitat']
+            );
+        }
+
+        return $animaux;
+    }
+
+    public function supprimer() {
+        $db = new Database();
+        $pdo = $db->getPdo();
+
+        $sql = "DELETE FROM animaux WHERE id_animal = :id_animal";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':id_animal' => $this->id_animal]);
+    }
 }
-
-}
+?>

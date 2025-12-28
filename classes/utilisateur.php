@@ -1,5 +1,5 @@
 <?php 
-require_once('../classes/Database.php');
+require_once('Database.php');
 
 class Utilisateur {
     private $id;
@@ -79,15 +79,15 @@ public  function creer(){
     $db = new Database();
     $pdo = $db->getPdo();
     
- $sql = "INSERT INTO utilisateurs (nom, email, role, motPasseHash, etat, approuve) 
-        VALUES (:nom, :email, :role, :motPasseHash, :etat, :approuve)";
+ $sql = "INSERT INTO utilisateurs (nom, email, role, motpasse_hash, etat, approuve) 
+        VALUES (:nom, :email, :role, :motpasse_hash, :etat, :approuve)";
  $stmt = $pdo->prepare($sql);
 
  $stmt->execute([
     ':nom' => $this->nom,
     ':email' => $this->email,
     ':role' => $this->role,
-    ':motPasseHash' => $this->motDePasseHashe,
+    ':motpasse_hash' => $this->motDePasseHashe,
     ':etat' => $this->etat,
     ':approuve' => $this->approuve
 ]);
@@ -99,35 +99,30 @@ public static function trouverParEmail($email){
     $db = new Database();
     $pdo = $db->getPdo();
 
-    
-
-    $sql ="SELECT *FROM utilisateurs WHERE email = :email";
+    $sql ="SELECT * FROM utilisateurs WHERE email = :email";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':email'=>$email]);
 
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if($data){
-       
-        return new Utilisateur(
+        $utilisateur = new Utilisateur(
             $data['nom'],
             $data['email'],
             $data['role'],
-            $data['motPasseHash'],
+            $data['motpasse_hash'],
             $data['etat'],
             $data['approuve']
         );
+        $utilisateur->id = $data['id_utilisateur'];
+        return $utilisateur;
     }else{
         return null;
     }
 }
 
 public  function verifierMotDePasse($motDePasse){
-    if(password_verify($motDePasse, $this->motDePasseHashe)){
-        return true ; 
-    }else {
-        return false;
-    }
+    return password_verify($motDePasse, $this->motDePasseHashe);
 }
 
 }
