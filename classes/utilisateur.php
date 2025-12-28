@@ -99,6 +99,8 @@ public static function trouverParEmail($email){
     $db = new Database();
     $pdo = $db->getPdo();
 
+    
+
     $sql ="SELECT *FROM utilisateurs WHERE email = :email";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':email'=>$email]);
